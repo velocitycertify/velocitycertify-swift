@@ -1,5 +1,6 @@
 import Foundation
 import CryptoKit
+@testable import VelocityCertify
 
 // MARK: - TestManifestFactory
 //
@@ -185,15 +186,5 @@ public final class TestManifestFactory {
     }
 }
 
-// MARK: - ManifestCache URL exposure (for test stub registration)
-
-extension ManifestCache {
-    // Expose the private URL constants as internal for test infrastructure.
-    // These must match the URLs used in fetchAndVerify() exactly.
-    static var manifestURL: URL {
-        URL(string: "https://velocitycertify.com/manifests/latest.json")!
-    }
-    static var sigURL: URL {
-        URL(string: "https://velocitycertify.com/manifests/latest.json.sig")!
-    }
-}
+// manifestURL and sigURL are accessed directly from ManifestCache via
+// @testable import VelocityCertify (both are internal, not private).

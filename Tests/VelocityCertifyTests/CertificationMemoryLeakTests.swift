@@ -90,7 +90,7 @@ final class CertificationMemoryLeakTests: XCTestCase {
         let factory = TestManifestFactory()
         let slug    = "com.test.game"
         let (manifest, sig) = factory.buildAndSign(
-            titles: [.init(slug: slug, status: "certified")],
+            titles: [.init(slug: slug, binarySHA256: String(repeating: "a", count: 64), gptkSHA256: String(repeating: "b", count: 64), status: "certified")],
             revokedSlugs: [])
         MockURLProtocol.stub(url: ManifestCache.manifestURL, data: manifest, statusCode: 200)
         MockURLProtocol.stub(url: ManifestCache.sigURL,      data: sig,      statusCode: 200)
