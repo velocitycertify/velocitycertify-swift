@@ -290,6 +290,7 @@ struct DisplayMatrixEntry: Codable, Sendable {
 struct MemoryPressureLadderEntry: Codable, Sendable {
     let simulatedGB:  Int       // available RAM headroom we allowed
     let survived:     Bool
+    let notes:        String?   // optional observations (OOM kill reason, crash message, etc.)
     let avgFPS:       Double?
     let crashedAt:    Double?   // elapsed seconds if game crashed
 
@@ -648,7 +649,7 @@ final class CertificationRunRecorder: @unchecked Sendable {
             var count  = mach_msg_type_number_t(MemoryLayout<thread_extended_policy>.size / MemoryLayout<integer_t>.size)
             let r = withUnsafeMutablePointer(to: &policy) { ptr in
                 ptr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { buf in
-                    thread_policy_get(threads[i], THREAD_EXTENDED_POLICY, buf, &count, nil)
+                    thread_policy_get(threads[i], thread_policy_flavor_t(THREAD_EXTENDED_POLICY), buf, &count, nil)
                 }
             }
             if r == KERN_SUCCESS {
