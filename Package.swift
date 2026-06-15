@@ -40,10 +40,7 @@ let package = Package(
         .testTarget(
             name: "VelocityCertifyTests",
             dependencies: ["VelocityCertify"],
-            path: "Tests/VelocityCertifyTests",
-            resources: [
-                .copy("Support/GameProcessStub")
-            ]
+            path: "Tests/VelocityCertifyTests"
         ),
     ]
 )
