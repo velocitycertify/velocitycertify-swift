@@ -384,8 +384,9 @@ actor ManifestCache {
     private let session:      URLSession
     private let overridePEM:  String?    // non-nil in tests: bypasses Bundle.main pubkey lookup
 
-    private static let manifestURL = URL(string: "https://velocitycertify.com/manifests/latest.json")!
-    private static let sigURL      = URL(string: "https://velocitycertify.com/manifests/latest.json.sig")!
+    // internal so test targets can stub these URLs via MockURLProtocol
+    static let manifestURL = URL(string: "https://velocitycertify.com/manifests/latest.json")!
+    static let sigURL      = URL(string: "https://velocitycertify.com/manifests/latest.json.sig")!
 
     /// Production init — uses URLSession.shared and pubkey from app bundle.
     init() {
@@ -409,7 +410,7 @@ actor ManifestCache {
         return await fetchAndVerify()
     }
 
-    private func fetchAndVerify() async -> VelocityCertifyManifest? {
+    func fetchAndVerify() async -> VelocityCertifyManifest? {
         do {
             // 1. Fetch manifest JSON
             let (manifestData, _) = try await session.data(from: Self.manifestURL)

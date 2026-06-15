@@ -139,7 +139,7 @@ final class ManifestCacheNetworkTests: XCTestCase {
         var tampered = original
         if let range = String(data: original, encoding: .utf8)?
                         .range(of: "\"1.0\"")
-                        .flatMap({ original.range(of: "\"1.0\"".data(using: .utf8)!) }) {
+                        .flatMap({ _ in original.range(of: "\"1.0\"".data(using: .utf8)!) }) {
             tampered.replaceSubrange(range, with: "\"1.1\"".data(using: .utf8)!)
         }
 
@@ -219,29 +219,29 @@ final class ManifestCacheNetworkTests: XCTestCase {
     func testSchema_1_0_accepted() async {
         stubValidManifest(schema: "1.0")
         let cache = makeCache()
-        XCTAssertNotNil(await cache.currentManifest(),
-            "Schema 1.0 must be accepted (= supportedSchemaMajor)")
+        let result = await cache.currentManifest()
+        XCTAssertNotNil(result, "Schema 1.0 must be accepted (= supportedSchemaMajor)")
     }
 
     func testSchema_1_99_accepted() async {
         stubValidManifest(schema: "1.99")
         let cache = makeCache()
-        XCTAssertNotNil(await cache.currentManifest(),
-            "Schema 1.99 must be accepted (same major, forward-compatible minor)")
+        let result = await cache.currentManifest()
+        XCTAssertNotNil(result, "Schema 1.99 must be accepted (same major, forward-compatible minor)")
     }
 
     func testSchema_2_0_rejected() async {
         stubValidManifest(schema: "2.0")
         let cache = makeCache()
-        XCTAssertNil(await cache.currentManifest(),
-            "Schema 2.0 must be rejected (major > supportedSchemaMajor)")
+        let result = await cache.currentManifest()
+        XCTAssertNil(result, "Schema 2.0 must be rejected (major > supportedSchemaMajor)")
     }
 
     func testSchema_3_0_rejected() async {
         stubValidManifest(schema: "3.0")
         let cache = makeCache()
-        XCTAssertNil(await cache.currentManifest(),
-            "Schema 3.0 must be rejected (major > supportedSchemaMajor)")
+        let result = await cache.currentManifest()
+        XCTAssertNil(result, "Schema 3.0 must be rejected (major > supportedSchemaMajor)")
     }
 
     func testSchema_missing_treatedAs1_accepted() async {

@@ -1,4 +1,5 @@
 import XCTest
+import CryptoKit
 @testable import VelocityCertify
 
 // MARK: - VelocityCertify Performance Baselines
@@ -25,7 +26,7 @@ final class VelocityCertifyPerformanceTests: XCTestCase {
         try await super.setUp()
         factory = TestManifestFactory()
         let (manifest, sig) = factory.buildAndSign(
-            titles: (0..<100).map { .init(slug: "game-\($0)", status: "certified") },
+            titles: (0..<100).map { .init(slug: "game-\($0)", binarySHA256: String(repeating: "a", count: 64), gptkSHA256: String(repeating: "b", count: 64), status: "certified") },
             revokedSlugs: [])
         MockURLProtocol.stub(url: ManifestCache.manifestURL, data: manifest, statusCode: 200)
         MockURLProtocol.stub(url: ManifestCache.sigURL,      data: sig,      statusCode: 200)
@@ -43,7 +44,7 @@ final class VelocityCertifyPerformanceTests: XCTestCase {
         // Ed25519 signature verification is the innermost trust operation.
         // On M1: ~0.3ms per verify. Regression threshold: 5ms.
         let (manifest, sig) = factory.buildAndSign(
-            titles: [.init(slug: "hades-2", status: "certified")],
+            titles: [.init(slug: "hades-2", binarySHA256: String(repeating: "a", count: 64), gptkSHA256: String(repeating: "b", count: 64), status: "certified")],
             revokedSlugs: [])
 
         let options = XCTMeasureOptions()
@@ -98,12 +99,11 @@ final class VelocityCertifyPerformanceTests: XCTestCase {
                                     pubkeyPEM: factory.pubkeyPEM, ttl: 3600)
         let service = CertificationService(cache: cache)
         let identity = CertificationIdentity(
-            slug:         "game-42",
-            gpuFamily:    "apple7",
-            gpuHash:      String(repeating: "a", count: 64),
-            gptkHash:     String(repeating: "b", count: 64),
-            wineHash:     String(repeating: "c", count: 64),
-            macOSVersion: "14.0")
+            gameSlug:        "game-42",
+            binarySHA256:    String(repeating: "a", count: 64),
+            gptkDylibSHA256: String(repeating: "b", count: 64),
+            velocityVersion: "1.0",
+            gptkVersion:     "2.0")
 
         // Warm the cache first
         let warmExp = expectation(description: "warm")
@@ -131,7 +131,7 @@ final class VelocityCertifyPerformanceTests: XCTestCase {
     func testPerf_jsonDecode_100titles() throws {
         // Decode a manifest with 100 title entries — typical manifest size at launch.
         let (manifest, _) = factory.buildAndSign(
-            titles: (0..<100).map { .init(slug: "game-\($0)", status: "certified") },
+            titles: (0..<100).map { .init(slug: "game-\($0)", binarySHA256: String(repeating: "a", count: 64), gptkSHA256: String(repeating: "b", count: 64), status: "certified") },
             revokedSlugs: [])
 
         let options = XCTMeasureOptions()

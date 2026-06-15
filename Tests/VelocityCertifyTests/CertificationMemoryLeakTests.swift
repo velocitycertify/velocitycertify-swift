@@ -44,10 +44,9 @@ final class CertificationMemoryLeakTests: XCTestCase {
         // is (temporarily) held by an in-flight request.
         weak var weakCache: ManifestCache?
 
-        // Set up a session that never responds (simulates in-flight request)
-        MockURLProtocol.register(url: URL(string: "https://velocitycertify.com/manifests/latest.json")!) { _ in
-            // Never call handler — request hangs
-        }
+        // Stub with empty data so the fetch completes but returns nil (invalid manifest)
+        MockURLProtocol.stub(url: ManifestCache.manifestURL, data: Data())
+        MockURLProtocol.stub(url: ManifestCache.sigURL,      data: Data())
         defer { MockURLProtocol.reset() }
 
         let session = MockURLProtocol.makeSession()
@@ -56,7 +55,7 @@ final class CertificationMemoryLeakTests: XCTestCase {
             let cache = ManifestCache(session: session, pubkeyPEM: "---stub---", ttl: 1)
             weakCache = cache
             // Fire an async fetch and immediately drop the cache reference
-            Task { _ = try? await cache.fetchAndVerify() }
+            Task { _ = await cache.fetchAndVerify() }
         }()
 
         // Wait for the in-flight task to notice its owner is gone
@@ -102,12 +101,11 @@ final class CertificationMemoryLeakTests: XCTestCase {
         let service = CertificationService(cache: cache)
 
         let identity = CertificationIdentity(
-            slug:        slug,
-            gpuFamily:   "apple7",
-            gpuHash:     "aaa",
-            gptkHash:    "bbb",
-            wineHash:    "ccc",
-            macOSVersion: "14.0")
+            gameSlug:        slug,
+            binarySHA256:    "aaa",
+            gptkDylibSHA256: "bbb",
+            velocityVersion: "1.0",
+            gptkVersion:     "2.0")
 
         measure(metrics: [XCTMemoryMetric()]) {
             let exp = expectation(description: "checks")
