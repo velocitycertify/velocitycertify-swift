@@ -1,0 +1,122 @@
+name: CI
+
+# VelocityCertify is an INDEPENDENT package.
+# This CI runs on its own infrastructure, controlled by no app — including Velocity.
+# Trust is established here, not inside any consuming application.
+
+on:
+  push:
+    branches: ["main"]
+    tags:     ["v*"]
+  pull_request:
+    branches: ["main"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  # ── Test ─────────────────────────────────────────────────────────────────────
+  test:
+    name: Test (Apple Silicon)
+    runs-on: macos-14   # M1 — the only supported architecture
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-${{ runner.os }}-${{ hashFiles('Package.swift', 'Sources/**/*.swift') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Build
+        run: swift build -c debug 2>&1 | tee build.log; exit "${PIPESTATUS[0]}"
+
+      - name: Test
+        run: |
+          swift test \
+            --parallel \
+            --enable-code-coverage \
+            2>&1 | tee test.log; exit "${PIPESTATUS[0]}"
+
+      - name: Generate coverage report
+        run: |
+          xcrun llvm-cov export \
+            .build/debug/VelocityCertifyPackageTests.xctest/Contents/MacOS/VelocityCertifyPackageTests \
+            -instr-profile .build/debug/codecov/default.profdata \
+            -format lcov \
+            -ignore-filename-regex ".build|Tests" \
+            > coverage.lcov || true
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.lcov
+          flags: velocitycertify
+          fail_ci_if_error: false
+
+      - name: Upload build logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build.log
+            test.log
+
+  # ── Release ──────────────────────────────────────────────────────────────────
+  release:
+    name: Tag Release
+    runs-on: macos-14
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify Package.swift version matches tag
+        run: |
+          # Ensure the tag matches the declared version in Package.swift (if pinned)
+          echo "Releasing VelocityCertify ${{ steps.version.outputs.VERSION }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "VelocityCertify ${{ steps.version.outputs.VERSION }}"
+          body: |
+            ## VelocityCertify ${{ steps.version.outputs.VERSION }}
+
+            An independent trust layer for Mac Silicon game certification.
+            Published and tested on infrastructure separate from any consuming app.
+
+            ### Add to your project
+
+            In Xcode: File → Add Package Dependencies:
+            ```
+            https://github.com/velocitycertify/velocitycertify-swift
+            ```
+
+            Or in `Package.swift`:
+            ```swift
+            .package(
+                url: "https://github.com/velocitycertify/velocitycertify-swift",
+                from: "${{ steps.version.outputs.VERSION }}"
+            )
+            ```
+
+            ### Trust model
+            The Ed25519 public key is bundled in this package — not in your app.
+            Manifests are fetched from velocitycertify.com and verified against
+            that key before any result is returned.
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
