@@ -24,17 +24,26 @@ import CryptoKit
 // MARK: - Identity
 
 /// The three inputs that uniquely identify a tested (game × GPTK) combination.
-struct CertificationIdentity: Equatable, Sendable {
-    let gameSlug:        String      // matches manifest slug (e.g. "hades-2")
-    let binarySHA256:    String      // hex SHA-256 of the game's primary .exe on disk
-    let gptkDylibSHA256: String      // hex SHA-256 of the active D3DMetal dylib
-    let velocityVersion: String
-    let gptkVersion:     String
+public struct CertificationIdentity: Equatable, Sendable {
+    public let gameSlug:        String      // matches manifest slug (e.g. "hades-2")
+    public let binarySHA256:    String      // hex SHA-256 of the game's primary .exe on disk
+    public let gptkDylibSHA256: String      // hex SHA-256 of the active D3DMetal dylib
+    public let velocityVersion: String
+    public let gptkVersion:     String
+
+    public init(gameSlug: String, binarySHA256: String, gptkDylibSHA256: String,
+                velocityVersion: String, gptkVersion: String) {
+        self.gameSlug        = gameSlug
+        self.binarySHA256    = binarySHA256
+        self.gptkDylibSHA256 = gptkDylibSHA256
+        self.velocityVersion = velocityVersion
+        self.gptkVersion     = gptkVersion
+    }
 }
 
 // MARK: - Status
 
-enum CertificationStatus: String, Codable, Sendable {
+public enum CertificationStatus: String, Codable, Sendable {
     /// Green: hashes match, tested performance meets the fps target.
     case certified             = "certified"
     /// Yellow: hashes match, but fps target was not met; known issues noted.
@@ -51,107 +60,107 @@ enum CertificationStatus: String, Codable, Sendable {
 
 // MARK: - Result
 
-struct CertificationResult: Sendable {
-    let identity:       CertificationIdentity
-    let status:         CertificationStatus
+public struct CertificationResult: Sendable {
+    public let identity:       CertificationIdentity
+    public let status:         CertificationStatus
 
     // Performance
-    let avgFPS:         Int?
-    let p1FPS:          Int?
-    let fpsTarget:      Int?
+    public let avgFPS:         Int?
+    public let p1FPS:          Int?
+    public let fpsTarget:      Int?
 
     // General compatibility
-    let knownIssues:    [String]
-    let macAdvantages:  [String]
+    public let knownIssues:    [String]
+    public let macAdvantages:  [String]
 
     // Controller
-    let mfiSupported:           Bool?
-    let dualSenseHaptics:       Bool?
-    let buttonPromptsAccurate:  Bool?
-    let gyroSupported:          Bool?
-    let mapperRequired:         Bool?
-    let controllerTestedWith:   String?
+    public let mfiSupported:           Bool?
+    public let dualSenseHaptics:       Bool?
+    public let buttonPromptsAccurate:  Bool?
+    public let gyroSupported:          Bool?
+    public let mapperRequired:         Bool?
+    public let controllerTestedWith:   String?
 
     // Power / battery
-    let batteryRuntimeMinutes:   Int?
-    let chargerWattsRequired:    Int?
-    let pluggedVsBatteryDeltaPct: Int?
+    public let batteryRuntimeMinutes:   Int?
+    public let chargerWattsRequired:    Int?
+    public let pluggedVsBatteryDeltaPct: Int?
 
     // Stability
-    let crashesPerHour:          Double?
-    let memoryGrowthMBPerHour:   Double?
-    let swapHighWaterGB:         Double?
-    let saveCompatibility:       String?
+    public let crashesPerHour:          Double?
+    public let memoryGrowthMBPerHour:   Double?
+    public let swapHighWaterGB:         Double?
+    public let saveCompatibility:       String?
 
     // GPTK coverage
-    let d3dFeatureLevel:         String?
-    let rayTracingStatus:        String?
-    let antiCheatStatus:         String?
-    let drmStatus:               String?
+    public let d3dFeatureLevel:         String?
+    public let rayTracingStatus:        String?
+    public let antiCheatStatus:         String?
+    public let drmStatus:               String?
 
     // Display
-    let hdrStatus:               String?
-    let externalDisplayBehavior: String?
-    let notchSafeAreaHandled:    Bool?
-    let promotionVariableRate:   Bool?
+    public let hdrStatus:               String?
+    public let externalDisplayBehavior: String?
+    public let notchSafeAreaHandled:    Bool?
+    public let promotionVariableRate:   Bool?
 
     // Network
-    let multiplayerStatus:       String?
-    let vpnSensitive:            Bool?
+    public let multiplayerStatus:       String?
+    public let vpnSensitive:            Bool?
 
     // macOS integration
-    let commandTabBehavior:       String?
-    let fullscreenQuality:        String?
-    let sleepPrevented:           Bool?
-    let stageManagerCompatible:   Bool?
+    public let commandTabBehavior:       String?
+    public let fullscreenQuality:        String?
+    public let sleepPrevented:           Bool?
+    public let stageManagerCompatible:   Bool?
 
     // Version matrix
-    let versionMatrix:            [ManifestVersionEntry]
+    public let versionMatrix:            [ManifestVersionEntry]
 
     // Meta
-    let certifiedDate:     String?
-    let certifierNotes:    String?
-    let hardwareLabel:     String?
+    public let certifiedDate:     String?
+    public let certifierNotes:    String?
+    public let hardwareLabel:     String?
 
     // Tool stack
-    let translationLayer:        String?
-    let translationLayerVersion: String?
-    let velocityOptimizations:   [String]
+    public let translationLayer:        String?
+    public let translationLayerVersion: String?
+    public let velocityOptimizations:   [String]
 
     // Apple Silicon metrics
-    let avgBandwidthSaturationPct:  Double?
-    let peakBandwidthSaturationPct: Double?
-    let gpuBubbleCount:             Int?
-    let gpuBubbleAvgMs:             Double?
-    let eCoreContentionPct:         Double?
-    let avgWindowServerMs:          Double?
-    let compressionStress:          Bool?
-    let psoStallCount:              Int?
-    let aneActivePct:               Double?
+    public let avgBandwidthSaturationPct:  Double?
+    public let peakBandwidthSaturationPct: Double?
+    public let gpuBubbleCount:             Int?
+    public let gpuBubbleAvgMs:             Double?
+    public let eCoreContentionPct:         Double?
+    public let avgWindowServerMs:          Double?
+    public let compressionStress:          Bool?
+    public let psoStallCount:              Int?
+    public let aneActivePct:               Double?
 
     // Protocol tests
-    let sleepRecoverySurvived:    Bool?
-    let sleepRecoverySeconds:     Double?
-    let audioSyncRating:          String?
-    let audioSyncAvgDriftMs:      Double?
-    let cacheReWarmupMinutes:     Double?
-    let displayMatrixResults:     [ManifestDisplayMatrixEntry]
-    let memoryPressureLadder:     [ManifestMemoryPressureEntry]
-    let gptkVersionComparison:    [ManifestGPTKVersionComparison]
+    public let sleepRecoverySurvived:    Bool?
+    public let sleepRecoverySeconds:     Double?
+    public let audioSyncRating:          String?
+    public let audioSyncAvgDriftMs:      Double?
+    public let cacheReWarmupMinutes:     Double?
+    public let displayMatrixResults:     [ManifestDisplayMatrixEntry]
+    public let memoryPressureLadder:     [ManifestMemoryPressureEntry]
+    public let gptkVersionComparison:    [ManifestGPTKVersionComparison]
 
     // Run provenance
-    let sourceRunId:       String?
-    let machineFingerprint: String?
+    public let sourceRunId:       String?
+    public let machineFingerprint: String?
 
     // Trust & verification
-    let witnessCount:           Int
-    let confirmingConfigs:      Int
-    let runCount:               Int?
-    let fpsStdDev:              Double?
-    let hasVideoEvidence:       Bool
-    let isCommunityConfirmed:   Bool
-    let crossToolComparisons:   [ManifestCrossToolResult]
-    let failedRunCount:         Int?
+    public let witnessCount:           Int
+    public let confirmingConfigs:      Int
+    public let runCount:               Int?
+    public let fpsStdDev:              Double?
+    public let hasVideoEvidence:       Bool
+    public let isCommunityConfirmed:   Bool
+    public let crossToolComparisons:   [ManifestCrossToolResult]
+    public let failedRunCount:         Int?
 
     private static func empty(_ identity: CertificationIdentity, status: CertificationStatus) -> CertificationResult {
         CertificationResult(
@@ -196,20 +205,32 @@ struct CertificationResult: Sendable {
 
 // MARK: - CertificationService
 
-actor CertificationService {
+public actor CertificationService {
 
-    static let shared = CertificationService()
+    public static let shared = CertificationService()
 
     private let cache: ManifestCache
 
-    init(cache: ManifestCache = ManifestCache()) {
+    /// Production init — uses the shared ManifestCache (bundle pubkey, URLSession.shared).
+    public init() {
+        self.cache = ManifestCache()
+    }
+
+    /// Test init — inject a custom cache (MockURLProtocol session + test pubkey).
+    init(cache: ManifestCache) {
         self.cache = cache
     }
 
     /// Called by DaemonSession after launch — non-blocking, game always runs regardless.
-    func check(identity: CertificationIdentity) async -> CertificationResult {
+    public func check(identity: CertificationIdentity) async -> CertificationResult {
         guard let manifest = await cache.currentManifest() else {
             return .unavailable(identity: identity)
+        }
+
+        // Reject the GPTK-not-found sentinel — if GPTK dylib wasn't located on this
+        // machine, the hash is a placeholder and must never match a manifest entry.
+        guard identity.gptkDylibSHA256 != "gptk-dylib-not-found" else {
+            return .unverified(identity: identity)
         }
 
         // Check revocation list first
@@ -319,7 +340,7 @@ extension CertificationService {
 
     /// SHA-256 of the file at `url`. Returns lowercase hex string.
     /// Streams the file in 4 MB chunks — safe for large game binaries (1–20 GB).
-    static func sha256(fileAt url: URL) throws -> String {
+    public static func sha256(fileAt url: URL) throws -> String {
         let handle = try FileHandle(forReadingFrom: url)
         defer { try? handle.close() }
 
@@ -336,7 +357,7 @@ extension CertificationService {
 
     /// SHA-256 of the primary D3DMetal dylib.
     /// `dylibSearchPath` is typically the value from DYLD_LIBRARY_PATH in the Wine env.
-    static func sha256GPTKDylib(searchPath: String?) throws -> String {
+    public static func sha256GPTKDylib(searchPath: String?) throws -> String {
         // GPTK 4: D3DMetal.framework/Versions/A/D3DMetal (framework bundle)
         // GPTK 3: libD3DMetal.dylib (flat dylib)
         let candidates: [String]
@@ -380,6 +401,9 @@ actor ManifestCache {
     private var cached: VelocityCertifyManifest?
     private var lastFetched: Date?
     private let ttl: TimeInterval
+    // Coalesces concurrent calls: only one network fetch at a time.
+    // Subsequent callers await the same Task rather than starting duplicate fetches.
+    private var inFlightFetch: Task<VelocityCertifyManifest?, Never>?
 
     private let session:      URLSession
     private let overridePEM:  String?    // non-nil in tests: bypasses Bundle.main pubkey lookup
@@ -404,10 +428,20 @@ actor ManifestCache {
     }
 
     func currentManifest() async -> VelocityCertifyManifest? {
+        // 1. Fresh cache hit — no fetch needed
         if let m = cached, let t = lastFetched, Date().timeIntervalSince(t) < ttl {
             return m
         }
-        return await fetchAndVerify()
+        // 2. A fetch is already in flight — join it rather than starting another
+        if let existing = inFlightFetch {
+            return await existing.value
+        }
+        // 3. Start a new fetch and let concurrent callers coalesce onto it
+        let task = Task { await self.fetchAndVerify() }
+        inFlightFetch = task
+        let result = await task.value
+        inFlightFetch = nil
+        return result
     }
 
     func fetchAndVerify() async -> VelocityCertifyManifest? {
@@ -795,11 +829,11 @@ struct ManifestGPTKCoverage: Codable, Sendable {
     }
 }
 
-struct ManifestVersionEntry: Codable, Sendable {
-    let macosVersion: String
-    let gptkVersion:  String
-    let status:       String
-    let notes:        String?
+public struct ManifestVersionEntry: Codable, Sendable {
+    public let macosVersion: String
+    public let gptkVersion:  String
+    public let status:       String
+    public let notes:        String?
 
     enum CodingKeys: String, CodingKey {
         case macosVersion = "macos_version"
@@ -890,25 +924,25 @@ struct ManifestProtocolTests: Codable, Sendable {
     }
 }
 
-struct ManifestDisplayMatrixEntry: Codable, Sendable {
-    let displayType: String;  let resolution: String;  let refreshHz: Double
-    let result: String;       let notes: String?
+public struct ManifestDisplayMatrixEntry: Codable, Sendable {
+    public let displayType: String;  public let resolution: String;  public let refreshHz: Double
+    public let result: String;       public let notes: String?
     enum CodingKeys: String, CodingKey {
         case displayType = "display_type"; case resolution; case refreshHz = "refresh_hz"
         case result; case notes
     }
 }
 
-struct ManifestMemoryPressureEntry: Codable, Sendable {
-    let simulatedGB: Int;  let survived: Bool;  let avgFPS: Double?;  let crashedAt: Double?
+public struct ManifestMemoryPressureEntry: Codable, Sendable {
+    public let simulatedGB: Int;  public let survived: Bool;  public let avgFPS: Double?;  public let crashedAt: Double?
     enum CodingKeys: String, CodingKey {
         case simulatedGB = "simulated_gb"; case survived
         case avgFPS = "avg_fps"; case crashedAt = "crashed_at_sec"
     }
 }
 
-struct ManifestGPTKVersionComparison: Codable, Sendable {
-    let gptkVersion: String;  let avgFPS: Double?;  let relativeRating: String?
+public struct ManifestGPTKVersionComparison: Codable, Sendable {
+    public let gptkVersion: String;  public let avgFPS: Double?;  public let relativeRating: String?
     enum CodingKeys: String, CodingKey {
         case gptkVersion = "gptk_version"; case avgFPS = "avg_fps"
         case relativeRating = "relative_rating"
@@ -937,13 +971,13 @@ struct ManifestWitnessSignature: Codable, Sendable {
     }
 }
 
-struct ManifestCrossToolResult: Codable, Sendable {
-    let translationLayer:    String
-    let avgFPS:              Double?
-    let p1FPS:               Double?
-    let crashesPerHour:      Double?
-    let relativeRating:      String?
-    let runId:               String?
+public struct ManifestCrossToolResult: Codable, Sendable {
+    public let translationLayer:    String
+    public let avgFPS:              Double?
+    public let p1FPS:               Double?
+    public let crashesPerHour:      Double?
+    public let relativeRating:      String?
+    public let runId:               String?
 
     enum CodingKeys: String, CodingKey {
         case translationLayer = "translation_layer"
